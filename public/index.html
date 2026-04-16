@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#0d1b2a" />
+  <title>Fund Request System - OFI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<!-- ══════════════════════════════════════ LOGIN ════════════ -->
+<div id="page-login" class="auth-screen">
+  <div class="auth-bg"></div>
+  <div class="auth-card">
+    <div class="auth-logo">
+      <img src="logo.png" alt="PayFlow" onerror="this.style.display='none'" />
+      <span class="brand">F<em>R</em>S</span>
+    </div>
+    <h2 class="auth-title">Iniciar Sesión</h2>
+    <p class="auth-sub">Plataforma de gestión y aprobación de pagos</p>
+    <div id="login-error" class="alert alert-error hidden"></div>
+    <div class="field">
+      <label>Correo electrónico</label>
+      <input id="login-correo" type="email" placeholder="usuario@empresa.com" autocomplete="email" inputmode="email" />
+    </div>
+    <div class="field">
+      <label>Contraseña</label>
+      <div class="input-eye">
+        <input id="login-pass" type="password" placeholder="••••••••" autocomplete="current-password" />
+        <button class="eye-btn" onclick="togglePass('login-pass',this)" type="button">👁</button>
+      </div>
+    </div>
+    <button class="btn btn-primary btn-full" id="btn-login">Entrar</button>
+    <p class="auth-switch">¿No tienes cuenta? <a href="#" onclick="showPage('page-register')">Regístrate</a></p>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════ REGISTER ═════════ -->
+<div id="page-register" class="auth-screen hidden">
+  <div class="auth-bg"></div>
+  <div class="auth-card auth-card--wide">
+    <div class="auth-logo"><span class="brand">F<em>R</em>S</span></div>
+    <h2 class="auth-title">Crear Cuenta</h2>
+    <div id="reg-error"   class="alert alert-error   hidden"></div>
+    <div id="reg-success" class="alert alert-success hidden"></div>
+    <div class="grid-2">
+      <div class="field"><label>Nombre completo</label><input id="reg-nombre" type="text" placeholder="Juan Pérez" autocomplete="name" /></div>
+      <div class="field"><label>Correo</label><input id="reg-correo" type="email" placeholder="juan@empresa.com" autocomplete="email" inputmode="email" /></div>
+      <div class="field"><label>Contraseña</label><input id="reg-pass" type="password" placeholder="Mínimo 6 caracteres" autocomplete="new-password" /></div>
+      <div class="field">
+        <label>Categoría</label>
+        <select id="reg-categoria">
+          <option value="">— Seleccionar —</option>
+          <option value="contador">Contador</option>
+          <option value="autorizador">Autorizador</option>
+        </select>
+      </div>
+      <div class="field span-2"><label>Agencia</label><input id="reg-agencia" type="text" placeholder="Central, SAH, Norte…" /></div>
+    </div>
+    <button class="btn btn-primary btn-full" id="btn-register">Crear cuenta</button>
+    <p class="auth-switch">¿Ya tienes cuenta? <a href="#" onclick="showPage('page-login')">Iniciar sesión</a></p>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════ APP ══════════════ -->
+<div id="page-app" class="app hidden">
+
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <img src="logo.png" alt="PayFlow" class="sidebar-logo" onerror="this.style.display='none'" />
+      <span class="brand">F<em>R</em>S</span>
+      <button class="sidebar-close-btn" onclick="closeSidebar()">×</button>
+    </div>
+    <nav class="sidebar-nav" id="sidebar-nav"></nav>
+    <div class="sidebar-footer">
+      <div class="user-chip">
+        <div class="user-avatar" id="user-avatar-initials"></div>
+        <div class="user-info">
+          <span id="user-name-sidebar"></span>
+          <small id="user-role-sidebar"></small>
+        </div>
+      </div>
+      <div class="sidebar-footer-actions">
+        <button class="btn-icon-sidebar" id="btn-notif" onclick="toggleNotifications()" title="Notificaciones">🔔</button>
+        <button class="btn-icon-sidebar btn-logout" onclick="logout()" title="Cerrar sesión">⏻</button>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-overlay" id="sidebar-ov" onclick="closeSidebar()"></div>
+
+  <header class="topbar">
+    <button class="hamburger" onclick="toggleSidebar()">☰</button>
+    <span class="brand topbar-brand">F<em>R</em>S</span>
+    <div class="topbar-actions">
+      <button class="topbar-btn" id="btn-notif-top" onclick="toggleNotifications()">🔔</button>
+      <button class="topbar-btn" onclick="logout()">⏻</button>
+    </div>
+  </header>
+
+  <main class="content" id="content">
+
+    <!-- ── DASHBOARD ──────────────────────────────────────── -->
+    <section id="view-dashboard" class="view hidden">
+      <div class="page-header">
+        <div><h1>Dashboard</h1><p class="page-sub">Resumen por agencia</p></div>
+        <button class="btn btn-outline btn-sm-mobile" onclick="loadDashboard()">↺ Actualizar</button>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-val" id="stat-total">—</div><div class="stat-label">Total</div></div>
+        <div class="stat-card stat-pending"><div class="stat-val" id="stat-pend">—</div><div class="stat-label">Pendientes</div></div>
+        <div class="stat-card stat-ok"><div class="stat-val" id="stat-ok">—</div><div class="stat-label">Aprobadas</div></div>
+        <div class="stat-card stat-err"><div class="stat-val" id="stat-rej">—</div><div class="stat-label">Rechazadas</div></div>
+        <div class="stat-card stat-money span-4"><div class="stat-val" id="stat-monto">—</div><div class="stat-label">Monto aprobado</div></div>
+      </div>
+      <div class="card">
+        <div class="card-header"><h3>Por Agencia</h3><span class="badge badge-info">Toca para ver detalle</span></div>
+        <div class="table-wrap"><table><thead><tr>
+          <th>Agencia</th><th class="ta-r">Total</th><th class="ta-r hide-xs">Pend.</th>
+          <th class="ta-r hide-xs">Aprob.</th><th class="ta-r hide-xs">Rechs.</th>
+          <th class="ta-r">Monto Total</th><th class="ta-r hide-sm">Aprobado</th>
+        </tr></thead><tbody id="tbody-agencias"></tbody></table></div>
+      </div>
+    </section>
+
+    <!-- ── DETALLE AGENCIA ────────────────────────────────── -->
+    <section id="view-agencia" class="view hidden">
+      <div class="page-header">
+        <div><button class="btn-back" onclick="showView('dashboard')">← Volver</button><h1 id="agencia-title">Agencia</h1></div>
+      </div>
+      <div class="card"><div class="table-wrap"><table><thead><tr>
+        <th>#</th><th>LBA</th><th class="hide-xs">Descripción</th><th class="hide-sm">Banco</th>
+        <th class="ta-r">Monto</th><th class="hide-xs">Café</th><th>Estado</th><th class="hide-sm">Fecha</th>
+      </tr></thead><tbody id="tbody-agencia-det"></tbody></table></div></div>
+    </section>
+
+    <!-- ── BANCOS ─────────────────────────────────────────── -->
+    <section id="view-bancos" class="view hidden">
+      <div class="page-header">
+        <div><h1>Resumen por Banco</h1><p class="page-sub">Banrural vs BAM — montos solicitados</p></div>
+        <button class="btn btn-outline btn-sm-mobile" onclick="loadBancos()">↺ Actualizar</button>
+      </div>
+      <div id="bancos-cards" class="bancos-grid"></div>
+      <div class="card" style="margin-top:1.5rem">
+        <div class="card-header"><h3>Comparativo detallado</h3></div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr>
+              <th>Banco</th>
+              <th class="ta-r">Total Solicit.</th>
+              <th class="ta-r hide-xs">Pendiente</th>
+              <th class="ta-r hide-xs">Aprobado</th>
+              <th class="ta-r hide-xs">Rechazado</th>
+              <th class="ta-r hide-sm">Cant. Pend.</th>
+              <th class="ta-r hide-sm">Cant. Aprob.</th>
+            </tr></thead>
+            <tbody id="tbody-bancos"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── MIS SOLICITUDES ────────────────────────────────── -->
+    <section id="view-solicitudes" class="view hidden">
+      <div class="page-header">
+        <div><h1>Mis Solicitudes</h1><p class="page-sub">Estado de tus solicitudes</p></div>
+        <button class="btn btn-primary btn-sm-mobile" onclick="showView('nueva-solicitud')">+ Nueva</button>
+      </div>
+      <div class="filter-row">
+        <input type="text" id="sol-search" placeholder="🔍 Buscar…" oninput="filterSolicitudes()" />
+        <select id="sol-filter-estado" onchange="filterSolicitudes()">
+          <option value="">Todos</option>
+          <option value="pendiente">Pendientes</option>
+          <option value="aprobado">Aprobadas</option>
+          <option value="rechazado">Rechazadas</option>
+        </select>
+      </div>
+      <div class="card"><div class="table-wrap"><table><thead><tr>
+        <th>#</th><th class="hide-xs">Lote</th><th>LBA</th><th class="hide-sm">Descripción</th>
+        <th class="hide-sm">Banco</th><th class="ta-r">Monto</th><th class="hide-xs">Café</th>
+        <th>Estado</th><th class="hide-sm">Fecha</th>
+      </tr></thead><tbody id="tbody-solicitudes"></tbody></table></div></div>
+    </section>
+
+    <!-- ── NUEVA SOLICITUD ────────────────────────────────── -->
+    <section id="view-nueva-solicitud" class="view hidden">
+      <div class="page-header">
+        <div><button class="btn-back" onclick="showView('solicitudes')">← Volver</button><h1>Nueva Solicitud</h1></div>
+      </div>
+      <div class="tab-bar">
+        <button class="tab-btn active" id="tab-individual" onclick="switchTab('individual')">📝 Individual</button>
+        <button class="tab-btn" id="tab-lote" onclick="switchTab('lote')">📦 Lote (pegar desde Excel)</button>
+      </div>
+
+      <!-- Individual -->
+      <div id="panel-individual" class="card form-card">
+        <div id="sol-error"   class="alert alert-error   hidden"></div>
+        <div id="sol-success" class="alert alert-success hidden"></div>
+        <div class="agencia-badge-row">
+          <span class="field-label">Agencia</span>
+          <span class="agencia-badge" id="sol-agencia-display"></span>
+        </div>
+        <div class="grid-2">
+          <div class="field"><label>LBA (Productor) <span class="req">*</span></label><input id="sol-lba" type="text" placeholder="Código o nombre" /></div>
+          <div class="field">
+            <label>Banco <span class="req">*</span></label>
+            <select id="sol-banco">
+              <option value="">— Seleccionar banco —</option>
+              <option value="Banrural">Banrural</option>
+              <option value="BAM">BAM</option>
+            </select>
+          </div>
+          <div class="field span-2"><label>Descripción <span class="req">*</span></label><textarea id="sol-desc" rows="3" placeholder="Descripción del pago…"></textarea></div>
+          <div class="field"><label>Monto <span class="req">*</span></label><input id="sol-monto" type="number" min="0" step="0.01" placeholder="0.00" inputmode="decimal" /></div>
+          <div class="field valign-center">
+            <label class="checkbox-label"><input id="sol-cafe" type="checkbox" /><span class="checkbox-custom"></span>Café recibido</label>
+          </div>
+        </div>
+        <div class="form-actions">
+          <button class="btn btn-outline" onclick="showView('solicitudes')">Cancelar</button>
+          <button class="btn btn-primary" id="btn-submit-sol">Guardar</button>
+        </div>
+      </div>
+
+      <!-- Lote -->
+      <div id="panel-lote" class="card form-card hidden">
+        <div id="lote-error"   class="alert alert-error   hidden"></div>
+        <div id="lote-success" class="alert alert-success hidden"></div>
+        <div class="agencia-badge-row">
+          <span class="field-label">Agencia</span>
+          <span class="agencia-badge" id="lote-agencia-display"></span>
+        </div>
+        <div class="lote-instructions">
+          <p>📋 <strong>Pega directamente desde Excel o Google Sheets.</strong> Columnas en orden:</p>
+          <div class="col-order">
+            <span class="col-tag">1. LBA</span>
+            <span class="col-tag">2. Descripción</span>
+            <span class="col-tag">3. Banco (Banrural o BAM)</span>
+            <span class="col-tag">4. Monto</span>
+            <span class="col-tag">5. Café (1/0 opcional)</span>
+          </div>
+          <div class="alert alert-info" style="margin-top:.75rem">
+            ⚠️ <strong>Solo se aceptan los bancos: Banrural y BAM.</strong> Otras opciones serán marcadas como error.
+          </div>
+          <p class="hint">Máximo <strong>200 filas</strong> por lote.</p>
+        </div>
+        <div class="field">
+          <label>Pegar datos aquí <span class="req">*</span></label>
+          <textarea id="lote-paste" rows="10" placeholder="Pega aquí las filas copiadas de Excel..." spellcheck="false"></textarea>
+        </div>
+        <div class="lote-actions">
+          <button class="btn btn-outline" onclick="parseLote()">👁 Vista previa</button>
+          <button class="btn btn-primary hidden" id="btn-submit-lote">📤 Enviar lote</button>
+        </div>
+        <div id="lote-preview" class="hidden">
+          <div class="preview-header">
+            <h4 id="preview-count"></h4>
+            <button class="btn-clear" onclick="clearLote()">✕ Limpiar</button>
+          </div>
+          <div class="table-wrap">
+            <table id="tbl-preview">
+              <thead><tr><th>#</th><th>LBA</th><th>Descripción</th><th>Banco</th><th class="ta-r">Monto</th><th>Café</th><th>Estado</th></tr></thead>
+              <tbody id="tbody-preview"></tbody>
+            </table>
+          </div>
+          <div class="preview-total" id="preview-total"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── APROBACIONES (lotes) ───────────────────────────── -->
+    <section id="view-aprobaciones" class="view hidden">
+      <div class="page-header">
+        <div><h1>Aprobaciones</h1><p class="page-sub">Aprobar o rechazar lotes de solicitudes</p></div>
+        <button class="btn btn-outline btn-sm-mobile" onclick="loadAprobaciones()">↺ Actualizar</button>
+      </div>
+      <div class="filter-row">
+        <input type="text" id="apr-search" placeholder="🔍 Buscar…" oninput="filterAprobaciones()" />
+        <select id="apr-filter-estado" onchange="filterAprobaciones()">
+          <option value="">Todos</option>
+          <option value="pendiente">Pendientes</option>
+          <option value="aprobado">Aprobados</option>
+          <option value="rechazado">Rechazados</option>
+        </select>
+        <select id="apr-filter-agencia" onchange="filterAprobaciones()">
+          <option value="">Todas las agencias</option>
+        </select>
+      </div>
+      <div id="lotes-container"></div>
+    </section>
+
+    <!-- ── HISTORIAL ──────────────────────────────────────── -->
+    <section id="view-historial" class="view hidden">
+      <div class="page-header"><h1>Historial de Acciones</h1></div>
+      <div class="card"><div class="table-wrap"><table><thead><tr>
+        <th>Lote</th><th class="hide-xs">Agencia</th><th class="hide-sm">Descripción</th>
+        <th>Acción</th><th class="hide-xs">Monto Aprobado</th>
+        <th class="hide-sm">Autorizador</th><th class="hide-sm">Detalle</th><th class="hide-sm">Fecha</th>
+      </tr></thead><tbody id="tbody-historial"></tbody></table></div></div>
+    </section>
+
+    <!-- ── USUARIOS (gestión activo) ─────────────────────── -->
+    <section id="view-usuarios" class="view hidden">
+      <div class="page-header">
+        <div><h1>Gestión de Usuarios</h1><p class="page-sub">Activar/desactivar cobertura de viaje</p></div>
+        <button class="btn btn-outline btn-sm-mobile" onclick="loadUsuarios()">↺ Actualizar</button>
+      </div>
+      <div class="alert alert-info" style="margin:0 0 1rem">
+        🧳 Desactiva un usuario cuando esté de viaje o licencia. No recibirá notificaciones de nuevas solicitudes y aparecerá como <strong>Inactivo</strong>.
+      </div>
+      <div class="filter-row">
+        <input type="text" id="usr-search" placeholder="🔍 Buscar por nombre o agencia…" oninput="filterUsuarios()" />
+        <select id="usr-filter-cat" onchange="filterUsuarios()">
+          <option value="">Todos los roles</option>
+          <option value="autorizador">Autorizadores</option>
+          <option value="contador">Contadores</option>
+        </select>
+        <select id="usr-filter-activo" onchange="filterUsuarios()">
+          <option value="">Todos</option>
+          <option value="activo">Activos</option>
+          <option value="inactivo">Inactivos</option>
+        </select>
+      </div>
+      <div class="card"><div class="table-wrap"><table><thead><tr>
+        <th>Nombre</th><th class="hide-xs">Correo</th>
+        <th>Rol</th><th class="hide-sm">Agencia</th>
+        <th>Estado</th><th>Acción</th>
+      </tr></thead><tbody id="tbody-usuarios"></tbody></table></div></div>
+    </section>
+
+  </main>
+</div>
+
+<!-- MODAL -->
+<div id="modal-overlay" class="modal-overlay hidden" onclick="closeModal(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <h3 id="modal-title">Acción</h3>
+      <button class="modal-close" onclick="closeModal()" type="button">×</button>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+    <div class="modal-footer" id="modal-footer"></div>
+  </div>
+</div>
+
+<div id="toast-container"></div>
+<script src="app.js"></script>
+</body>
+</html>

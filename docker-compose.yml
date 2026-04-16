@@ -1,0 +1,47 @@
+version: '3.9'
+
+# ════════════════════════════════════════════════════════════
+#  PayFlow — docker-compose.yml
+#  Uso local: docker compose up --build
+# ════════════════════════════════════════════════════════════
+
+services:
+
+  # ── PostgreSQL ─────────────────────────────────────────────
+  db:
+    image: postgres:16-alpine
+    container_name: payflow-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB:       payflow
+      POSTGRES_USER:     payflow
+      POSTGRES_PASSWORD: payflow_pass
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U payflow -d payflow"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── App ────────────────────────────────────────────────────
+  app:
+    build: .
+    container_name: payflow-app
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      DATABASE: postgresql://payflow:payflow_pass@db:5432/payflow
+      JWT_SECRET: change_this_in_production_please
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  pgdata:
+    name: payflow-pgdata
