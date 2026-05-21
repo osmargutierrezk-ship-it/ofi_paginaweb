@@ -45,8 +45,8 @@ body {
 .valign-center{ display:flex; align-items:flex-end; padding-bottom:.4rem; }
 
 /* ── Brand ─────────────────────────────────────────────── */
-.brand    { font-family: 'Century Gothic', CenturyGothic, AppleGothic, sans-serif; font-weight:800; font-size:1.4rem; color:var(--white); letter-spacing:-0.5px; }
-.brand em { font-style:normal; color:var(--amber); }
+.brand    { font-family:'Syne',sans-serif; font-weight:800; font-size:1.45rem; color:var(--white); letter-spacing:2px; text-transform:uppercase; }
+.brand em { font-style:normal; color:var(--amber); font-weight:800; }
 
 /* ══════════════════════════════════════════════════════════
    AUTH
@@ -203,8 +203,9 @@ body {
 }
 .sidebar-brand {
   display:flex; align-items:center; gap:.65rem;
-  padding:1.25rem 1rem;
-  border-bottom:1px solid rgba(255,255,255,.07);
+  padding:1.25rem 1rem 1rem;
+  border-bottom:2px solid var(--amber);
+  background:linear-gradient(135deg, rgba(212,160,23,.08) 0%, transparent 100%);
 }
 .sidebar-logo       { width:30px; height:30px; object-fit:contain; }
 .sidebar-close-btn  {
@@ -269,27 +270,31 @@ body {
 /* ── Topbar (mobile) ──────────────────────────────── */
 .topbar {
   display:none; position:fixed; top:0; left:0; right:0;
-  height:var(--topbar-h); background:var(--navy);
+  height:var(--topbar-h);
+  background:linear-gradient(90deg, var(--navy) 60%, #1a2f4a 100%);
   z-index:280; padding:0 1rem;
   align-items:center; justify-content:space-between;
-  box-shadow:var(--shadow-md);
+  box-shadow:0 2px 12px rgba(0,0,0,.35);
+  border-bottom:2px solid var(--amber);
 }
 .hamburger {
-  background:none; border:none; color:white; font-size:1.25rem;
+  background:none; border:none; color:white; font-size:1.35rem;
   cursor:pointer; padding:.35rem;
   min-width:40px; min-height:40px;
   display:flex; align-items:center; justify-content:center;
+  border-radius:8px; transition:background .18s;
 }
-.topbar-brand   { font-size:1.2rem; }
-.topbar-actions { display:flex; gap:.3rem; }
+.hamburger:hover { background:rgba(255,255,255,.12); }
+.topbar-brand   { font-size:1.25rem; letter-spacing:2.5px; }
+.topbar-actions { display:flex; gap:.3rem; align-items:center; }
 .topbar-btn {
-  background:none; border:none; color:rgba(255,255,255,.65);
-  cursor:pointer; font-size:1rem;
-  min-width:36px; min-height:36px;
+  background:none; border:none; color:rgba(255,255,255,.70);
+  cursor:pointer; font-size:1.05rem;
+  min-width:38px; min-height:38px;
   display:flex; align-items:center; justify-content:center;
-  border-radius:8px;
+  border-radius:8px; transition:all .18s;
 }
-.topbar-btn:hover { background:rgba(255,255,255,.10); color:white; }
+.topbar-btn:hover { background:rgba(255,255,255,.12); color:white; transform:scale(1.05); }
 
 /* ── Content ──────────────────────────────────────── */
 .content    { margin-left:var(--sidebar-w); flex:1; padding:2rem; min-height:100vh; }

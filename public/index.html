@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0d1b2a" />
-  <title>Fund Request System - OFI</title>
+  <title>NEXO — Gestión de Pagos OFI</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
@@ -17,7 +17,7 @@
   <div class="auth-card">
     <div class="auth-logo">
       <img src="logo.png" alt="PayFlow" onerror="this.style.display='none'" />
-      <span class="brand">F<em>R</em>S</span>
+      <span class="brand">N<em>E</em>XO</span>
     </div>
     <h2 class="auth-title">Iniciar Sesión</h2>
     <p class="auth-sub">Plataforma de gestión y aprobación de pagos</p>
@@ -42,23 +42,16 @@
 <div id="page-register" class="auth-screen hidden">
   <div class="auth-bg"></div>
   <div class="auth-card auth-card--wide">
-    <div class="auth-logo"><span class="brand">F<em>R</em>S</span></div>
+    <div class="auth-logo"><span class="brand">N<em>E</em>XO</span></div>
     <h2 class="auth-title">Crear Cuenta</h2>
+    <p class="auth-sub">Registro disponible para contadores. Los autorizadores son creados por administración.</p>
     <div id="reg-error"   class="alert alert-error   hidden"></div>
     <div id="reg-success" class="alert alert-success hidden"></div>
     <div class="grid-2">
       <div class="field"><label>Nombre completo</label><input id="reg-nombre" type="text" placeholder="Juan Pérez" autocomplete="name" /></div>
       <div class="field"><label>Correo</label><input id="reg-correo" type="email" placeholder="juan@empresa.com" autocomplete="email" inputmode="email" /></div>
       <div class="field"><label>Contraseña</label><input id="reg-pass" type="password" placeholder="Mínimo 6 caracteres" autocomplete="new-password" /></div>
-      <div class="field">
-        <label>Categoría</label>
-        <select id="reg-categoria">
-          <option value="">— Seleccionar —</option>
-          <option value="contador">Contador</option>
-          <option value="autorizador">Autorizador</option>
-        </select>
-      </div>
-      <div class="field span-2"><label>Agencia</label><input id="reg-agencia" type="text" placeholder="Central, SAH, Norte…" /></div>
+      <div class="field"><label>Agencia</label><input id="reg-agencia" type="text" placeholder="Central, SAH, Norte…" /></div>
     </div>
     <button class="btn btn-primary btn-full" id="btn-register">Crear cuenta</button>
     <p class="auth-switch">¿Ya tienes cuenta? <a href="#" onclick="showPage('page-login')">Iniciar sesión</a></p>
@@ -71,7 +64,7 @@
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-brand">
       <img src="logo.png" alt="PayFlow" class="sidebar-logo" onerror="this.style.display='none'" />
-      <span class="brand">F<em>R</em>S</span>
+      <span class="brand">N<em>E</em>XO</span>
       <button class="sidebar-close-btn" onclick="closeSidebar()">×</button>
     </div>
     <nav class="sidebar-nav" id="sidebar-nav"></nav>
@@ -93,7 +86,7 @@
 
   <header class="topbar">
     <button class="hamburger" onclick="toggleSidebar()">☰</button>
-    <span class="brand topbar-brand">F<em>R</em>S</span>
+    <span class="brand topbar-brand">N<em>E</em>XO</span>
     <div class="topbar-actions">
       <button class="topbar-btn" id="btn-notif-top" onclick="toggleNotifications()">🔔</button>
       <button class="topbar-btn" onclick="logout()">⏻</button>

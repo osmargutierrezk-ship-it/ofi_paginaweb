@@ -14,10 +14,39 @@ let loteParsed     = [];
 
 const BANCOS = ['Banrural', 'BAM'];
 
+/* ══ SESIÓN — Renovación automática del token ═══════════ */
+function jwtPayload(token) {
+  try { return JSON.parse(atob(token.split('.')[1].replace(/-/g,'+').replace(/_/g,'/'))); }
+  catch { return null; }
+}
+function saveSession(token, user) {
+  TOKEN = token; USER = user;
+  localStorage.setItem('pf_token', token);
+  localStorage.setItem('pf_user', JSON.stringify(user));
+}
+async function refreshToken() {
+  if (!TOKEN) return;
+  try {
+    const data = await apiFetch('/api/auth/refresh', { method: 'POST' });
+    if (data.token) saveSession(data.token, data.usuario);
+  } catch (err) {
+    if (err.message && (err.message.includes('xpirado') || err.message.includes('nválido'))) logout();
+  }
+}
+function scheduleTokenRefresh() {
+  const payload = jwtPayload(TOKEN);
+  if (payload && payload.exp) {
+    const secsLeft = payload.exp - Math.floor(Date.now() / 1000);
+    if (secsLeft < 0) { logout(); return; }
+    if (secsLeft < 7 * 24 * 3600) refreshToken();
+  }
+  setInterval(refreshToken, 6 * 60 * 60 * 1000);
+}
+
 /* ══ INIT ═══════════════════════════════════════════════════ */
 window.addEventListener('DOMContentLoaded', () => {
   registerServiceWorker();
-  if (TOKEN && USER) bootApp();
+  if (TOKEN && USER) { bootApp(); scheduleTokenRefresh(); }
   else showPage('page-login');
   bindEvents();
 });
@@ -103,9 +132,8 @@ async function doLogin() {
   btn.textContent = 'Entrando…'; btn.disabled = true;
   try {
     const data = await apiPost('/api/auth/login', { correo, contrasena });
-    TOKEN = data.token; USER = data.usuario;
-    localStorage.setItem('pf_token', TOKEN);
-    localStorage.setItem('pf_user', JSON.stringify(USER));
+    saveSession(data.token, data.usuario);
+    scheduleTokenRefresh();
     bootApp();
     if (localStorage.getItem('pf_push') === 'on') setTimeout(subscribeToNotifications, 1000);
   } catch(err) { showAlert(errEl, err.message); }
@@ -114,15 +142,15 @@ async function doLogin() {
 
 async function doRegister() {
   const nombre = v('reg-nombre'), correo = v('reg-correo'), contrasena = v('reg-pass');
-  const categoria = v('reg-categoria'), agencia = v('reg-agencia');
+  const agencia = v('reg-agencia');
   const errEl = el('reg-error'), okEl = el('reg-success');
   errEl.classList.add('hidden'); okEl.classList.add('hidden');
-  if (!nombre||!correo||!contrasena||!categoria||!agencia) { showAlert(errEl,'Completa todos los campos.'); return; }
+  if (!nombre||!correo||!contrasena||!agencia) { showAlert(errEl,'Completa todos los campos.'); return; }
   const btn = el('btn-register');
   btn.textContent = 'Creando…'; btn.disabled = true;
   try {
-    await apiPost('/api/auth/register', { nombre, correo, contrasena, categoria, agencia });
-    okEl.textContent = '¡Cuenta creada! Ahora puedes iniciar sesión.';
+    await apiPost('/api/auth/register', { nombre, correo, contrasena, agencia });
+    okEl.textContent = '¡Cuenta creada como Contador! Ahora puedes iniciar sesión.';
     okEl.classList.remove('hidden');
     setTimeout(() => showPage('page-login'), 2000);
   } catch(err) { showAlert(errEl, err.message); }
@@ -131,8 +159,11 @@ async function doRegister() {
 
 function logout() {
   TOKEN = null; USER = null;
-  localStorage.removeItem('pf_token'); localStorage.removeItem('pf_user'); localStorage.removeItem('pf_push');
-  showPage('page-login'); el('page-app').classList.add('hidden');
+  localStorage.removeItem('pf_token');
+  localStorage.removeItem('pf_user');
+  localStorage.removeItem('pf_push');
+  showPage('page-login');
+  el('page-app').classList.add('hidden');
 }
 
 /* ══ APP BOOT ════════════════════════════════════════════════ */
@@ -808,6 +839,9 @@ async function apiFetch(url, opts={}) {
   if(TOKEN) headers['Authorization']=`Bearer ${TOKEN}`;
   const res=await fetch(API+url,{...opts,headers});
   const data=await res.json().catch(()=>({error:'Respuesta inválida'}));
+  // Renovación silenciosa: el servidor envía el nuevo token en X-New-Token
+  const newTok = res.headers.get('X-New-Token');
+  if(newTok && USER) saveSession(newTok, USER);
   if(!res.ok) throw new Error(data.error||`HTTP ${res.status}`);
   return data;
 }

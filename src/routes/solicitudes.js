@@ -35,8 +35,8 @@ router.get('/', async (req, res) => {
   }
 });
 
-// GET /api/solicitudes/lotes — lotes con sus solicitudes anidadas
-router.get('/lotes', async (req, res) => {
+// GET /api/solicitudes/lotes — lotes con sus solicitudes anidadas (solo autorizadores)
+router.get('/lotes', requireRole('autorizador'), async (req, res) => {
   try {
     const esCentral = req.user.agencia === 'Central';
 
